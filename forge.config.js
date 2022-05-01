@@ -1,5 +1,5 @@
 const path = require('path');
-const iconDir = path.resolve(__dirname, 'assets', 'icons', 'app');
+const iconDir = path.resolve(__dirname, 'assets', 'icons');
 
 const commonLinuxConfig = {
   icon: path.resolve(iconDir, 'icon.png'),
