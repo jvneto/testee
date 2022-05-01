@@ -75,8 +75,8 @@ const config = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'sbotics',
-          name: 'launcher',
+          owner: 'jvneto',
+          name: 'testee',
         },
         draft: true,
         prerelease: false,
