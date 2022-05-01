@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const Windows = require('./src/class/__instance_windows');
 const WindowTouchBar = require('./src/class/__instance_touchbar');
+const { autoUpdater } = require('electron-updater');
 
 handleSquirrelEvent();
 
@@ -173,4 +174,49 @@ ipcMain.on('restart-app', () => {
 });
 ipcMain.on('close-app', () => {
   app.exit();
+});
+
+// AutoUpdater
+ipcMain.on('update-init', (event) => {
+  autoUpdater
+    .checkForUpdates()
+    .then(() => (event.returnValue = true))
+    .catch(() => (event.returnValue = false));
+});
+
+autoUpdater.on('checking-for-update', () => {
+console.log(" DEU CERTO")
+  splashWindow.content().send('update-checking', true);
+});
+
+autoUpdater.on('update-available', (info) => {
+  splashWindow.content().send('update-available', {
+    state: true,
+    data: info,
+  });
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  splashWindow.content().send('update-not-available', {
+    state: false,
+    data: info,
+  });
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  splashWindow.content().send('update-download-progress', {
+    state: false,
+    progress: progressObj,
+  });
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  splashWindow.content().send('update-downloaded', {
+    state: true,
+    info: info,
+  });
+});
+
+ipcMain.on('update-install', (event) => {
+  autoUpdater.quitAndInstall();
 });
