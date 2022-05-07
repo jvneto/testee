@@ -1,5 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const { autoUpdater } = require('electron-updater');
+const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
 const path = require('path');
 const Windows = require('./src/class/__instance_windows');
 const WindowTouchBar = require('./src/class/__instance_touchbar');
@@ -127,6 +126,14 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on('ready', () => {
+    updateApp = require('update-electron-app')({
+      logger: require('electron-log'),
+    });
+
+    updateApp({
+      updateInterval: '1 hour',
+      notifyUser: true,
+    });
     createWindow();
     app.on('activate', function () {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -142,11 +149,12 @@ if (!app.requestSingleInstanceLock()) {
     authWindow.focus();
     authWindow.webContents.send('set_user_auth', url.split('accessToken=')[1]);
   });
-  app.on('window-all-closed', function () {
-    windowsAllClose = true;
-    if (process.platform !== 'darwin') app.quit();
-  });
 }
+
+app.on('window-all-closed', function () {
+  windowsAllClose = true;
+  if (process.platform !== 'darwin') app.quit();
+});
 
 // IpcMain Events
 ipcMain.on('get-version', (event) => {
@@ -183,9 +191,9 @@ ipcMain.on('close-app', () => {
 // AutoUpdater
 ipcMain.on('update-init', (event) => {
   autoUpdater
-    .checkForUpdates()
+    .checkForUpdatesAndNotify()
     .then(() => (event.returnValue = true))
-    .catch(() => (event.returnValue = false));
+    .catch((error) => (event.returnValue = error));
 });
 
 autoUpdater.on('checking-for-update', () => {

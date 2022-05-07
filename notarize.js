@@ -10,7 +10,7 @@ const _default = async function notarizing(context) {
     }
 
     return await notarize({
-        appBundleId: 'com.jgraph.drawio.desktop',
+        appBundleId: 'com.sbotics.launcher',
         appPath: `${appOutDir}/${appName}.app`,
         appleId: "",
         appleIdPassword: "",

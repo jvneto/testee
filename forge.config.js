@@ -1,21 +1,38 @@
 const path = require('path');
+const fs = require('fs');
+const packageJson = require('./package.json');
+
+const { version } = packageJson;
 const iconDir = path.resolve(__dirname, 'assets', 'icons');
 
+if (process.env['WINDOWS_CODESIGN_FILE']) {
+  const certPath = path.join(__dirname, 'win-certificate.pfx');
+  const certExists = fs.existsSync(certPath);
+
+  if (certExists) {
+    process.env['WINDOWS_CODESIGN_FILE'] = certPath;
+  }
+}
+
 const commonLinuxConfig = {
-  icon: path.resolve(iconDir, 'icon.png'),
+  icon: {
+    scalable: path.resolve(iconDir, 'sbotics.svg'),
+  },
   mimeType: ['x-scheme-handler/sbotics'],
 };
 
 const config = {
   packagerConfig: {
-    executableName: 'sbotics',
+    name: 'sBotics',
+    executableName: 'sBotics',
     asar: true,
+    icon: path.resolve(__dirname, 'assets', 'icons', 'sbotics'),
     appBundleId: 'com.sbotics.launcher',
-    usageDescription: [],
+    usageDescription: {},
     appCategoryType: 'public.app-category.developer-tools',
     protocols: [
       {
-        name: 'sBotics Launcher Launch Protocol',
+        name: 'sBotics Launch Protocol',
         schemes: ['sbotics'],
       },
     ],
@@ -25,29 +42,38 @@ const config = {
     },
     osxSign: {
       identity: 'Developer ID Application: Julio Cesar Vera Neto (5UQ7TRCVCT)',
-      'hardened-runtime': true,
-      entitlements: 'entitlements.plist',
-      'entitlements-inherit': 'entitlements.plist',
+      hardenedRuntime: true,
+      'gatekeeper-assess': false,
+      entitlements: 'static/entitlements.plist',
+      'entitlements-inherit': 'static/entitlements.plist',
       'signature-flags': 'library',
-      verbose: true,
-    },
-    osxNotarize: {
-      appleId: '',
-      appleIdPassword: '',
     },
   },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
-      arch: ['ia32', 'x64'],
-      config: {
+      config: (arch) => ({
         name: 'sBotics',
         authors: 'sBotics',
-        iconUrl: path.resolve(iconDir, 'icon.png'),
+        exe: 'sbotics.exe',
+        iconUrl:
+          'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
+        loadingGif: '',
         noMsi: true,
-        setupExe: 'sBotics.exe',
-        setupIcon: path.resolve(iconDir, 'icon.ico'),
+        setupExe: `sbotics-${version}-win32-${arch}-setup.exe`,
+        setupIcon: path.resolve(iconDir, 'sbotics.ico'),
+        certificateFile: process.env['WINDOWS_CODESIGN_FILE'],
+        certificatePassword: process.env['WINDOWS_CODESIGN_PASSWORD'],
+      }),
+    },
+    {
+      name: '@electron-forge/maker-pkg',
+      platforms: ['darwin'],
+      arch: 'all',
+      config: {
+        icon: path.resolve(iconDir, 'icon.icns'),
+        install: '/Applications',
       },
     },
     {
@@ -60,23 +86,14 @@ const config = {
       platforms: ['linux'],
       config: commonLinuxConfig,
     },
-    {
-      name: '@electron-forge/maker-pkg',
-      platforms: ['darwin'],
-      arch: 'all',
-      config: {
-        icon: path.resolve(iconDir, 'icon.icns'),
-        install: '/Applications',
-      },
-    },
   ],
   publishers: [
     {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'sbotics',
-          name: 'launcher',
+          owner: 'jvneto',
+          name: 'testee',
         },
         draft: true,
         prerelease: false,
@@ -85,4 +102,32 @@ const config = {
   ],
 };
 
+function notarizeMaybe() {
+  if (process.platform !== 'darwin') {
+    return;
+  }
+
+  if (!process.env.CI) {
+    console.log(`Not in CI, skipping notarization`);
+    return;
+  }
+
+  if (!process.env.APPLE_ID || !process.env.APPLE_ID_PASSWORD) {
+    console.warn(
+      'Should be notarizing, but environment variables APPLE_ID or APPLE_ID_PASSWORD are missing!',
+    );
+    return;
+  }
+
+  config.packagerConfig.osxNotarize = {
+    appBundleId: 'com.sbotics.launcher',
+    appleId: process.env.APPLE_ID,
+    appleIdPassword: process.env.APPLE_ID_PASSWORD,
+    ascProvider: '5UQ7TRCVCT',
+  };
+}
+
+notarizeMaybe();
+
+// Finally, export it
 module.exports = config;

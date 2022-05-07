@@ -1,18 +1,26 @@
 var ipcRenderer = require('electron').ipcRenderer;
-import { UpdateInit, UpdateAvailable, UpdateInstall } from '../utils/autoupdate-manager.js';
+import {
+  UpdateInit,
+  UpdateAvailable,
+  UpdateInstall,
+} from '../utils/autoupdate-manager.js';
 
 var donwloadStateInit = false;
 
 async function AutoUpdateLauncher() {
   try {
     console.log('Buscando atualização');
-    if (UpdateInit()) {
+    const t = UpdateInit();
+    console.log(t);
+    if (t) {
       if (await UpdateAvailable()['state']) {
         console.log('Atualização disponível baixando! Por favor, espere...');
         donwloadStateInit = true;
       } else {
         console.log('sBotics Launcher está na última versão disponível!');
       }
+    } else {
+      console.log(t);
     }
 
     // else if (!SLMP()) {
