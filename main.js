@@ -74,8 +74,14 @@ const createWindow = (accessToken = null) => {
   let { screen } = require('electron');
   let windows = new Windows(screen);
   let touchbar = new WindowTouchBar();
+
   // Auth Window Instance
   authWindow = windows.auth();
+
+  if (process.platform.toLowerCase() == 'linux') {
+    authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+    authWindow.setTouchBar(new WindowTouchBar().auth());
+  }
 
   // Splash Window Instance
   splashWindow = windows.splash();

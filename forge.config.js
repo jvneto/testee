@@ -24,7 +24,7 @@ const commonLinuxConfig = {
 const config = {
   packagerConfig: {
     name: 'sBotics',
-    executableName: 'sBotics',
+    executableName: 'sbotics',
     asar: true,
     icon: path.resolve(__dirname, 'assets', 'icons', 'sbotics'),
     appBundleId: 'com.sbotics.launcher',
