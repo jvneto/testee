@@ -1,88 +1,54 @@
 var ipcRenderer = require('electron').ipcRenderer;
-import {
-  UpdateInit,
-  UpdateAvailable,
-  UpdateInstall,
-} from '../utils/autoupdate-manager.js';
+import { Application } from '../class/__instance_application.js';
 
-var donwloadStateInit = false;
-
-async function AutoUpdateLauncher() {
-  try {
-    console.log('Buscando atualização');
-    const t = UpdateInit();
-    console.log(t);
-    if (t) {
-      if (await UpdateAvailable()['state']) {
-        console.log('Atualização disponível baixando! Por favor, espere...');
-        donwloadStateInit = true;
-      } else {
-        console.log('sBotics Launcher está na última versão disponível!');
-      }
-    } else {
-      console.log(t);
-    }
-
-    // else if (!SLMP()) {
-    //       console.log('Não foi possível procurar atualizações. Tente mais tarde!');
-    //     }
-  } catch (error) {
-    console.log(
-      'A pesquisa de atualização foi abortada devido a uma falha localizada!',
-    );
-  }
-}
+let progressBar;
+let application = new Application();
 
 window.onload = () => {
   document.getElementById(
     'text-version',
-  ).innerText = `Versão: ${ipcRenderer.sendSync('get-version')} BETA`;
-  AutoUpdateLauncher();
+  ).innerText = `Versão: ${ipcRenderer.sendSync(
+    'get-version',
+  )} ${ipcRenderer.sendSync('get-release-type')}`;
+
+  if (application.SLMP()) {
+    application.instanceWindowAuth();
+  }
 };
 
-ipcRenderer.on('update-download-progress', (event, arg) => {
-  console.log(arg['progress']['percent']);
-
-  //   const percentage =
-  //     arg['progress']['percent'] == 100 && donwloadStateCallback
-  //       ? 1
-  //       : arg['progress']['percent'];
-  //   donwloadStateCallback = false;
-  //   if (donwloadStateInit)
-  //     Update({
-  //       id: 'LoadBar',
-  //       addState: 'success',
-  //       removeState: 'info',
-  //       percentage: percentage,
-  //       text: [
-  //         {
-  //           textContainer: 'TextProgress',
-  //           message: `<i class="fas fa-file-archive text-success"></i> <strong style="margin-left: 13px">${Lang(
-  //             'Update available by downloading! Please wait...',
-  //           )}</strong>`,
-  //         },
-  //       ],
-  //     });
+ipcRenderer.on('autoUpdateAvailable', (event, arg) => {
+  if (arg.state) {
+    document.getElementById(
+      'text-update-state',
+    ).innerHTML = `Atualizando sBotics Launcher! <span class="text-xs text-gray-700">Aguarde, isso pode demorar...</span>`;
+    let timeCounter = 5;
+    document
+      .getElementById('container-progress-bar')
+      .classList.remove('hidden');
+    progressBar = setInterval(() => {
+      document.getElementById(
+        'progress-progress-bar',
+      ).style.width = `${(timeCounter =
+        timeCounter >= 100
+          ? 2
+          : timeCounter * 1.2 > 100
+          ? 100
+          : timeCounter * 1.2)}%`;
+    }, 700);
+  }
 });
 
-ipcRenderer.on('update-downloaded', (event, arg) => {
-  (async () => {
-    console.log('Reiniciando para finalizar a atualização...');
-    // Update({
-    //   id: 'LoadBar',
-    //   addState: 'success',
-    //   removeState: 'info',
-    //   percentage: 100,
-    //   text: [
-    //     {
-    //       textContainer: 'TextProgress',
-    //       message: `<i class="fas fa-redo-alt text-success"></i> <strong style="margin-left: 13px">${Lang(
-    //         'Restarting to finish update...',
-    //       )}</strong>`,
-    //     },
-    //   ],
-    // });
-    // await asyncWait(300);
-    UpdateInstall();
-  })();
+ipcRenderer.on('autoUpdateError', (event, arg) => {
+  document.getElementById(
+    'text-update-state',
+  ).innerHTML = `<span class="text-xs text-red-700">${arg.message}</span>`;
+  document.getElementById('button-close').classList.remove('hidden');
+  document.getElementById('container-progress-bar').classList.remove('hidden');
+  document.getElementById('progress-progress-bar').style.width = '100%';
+  document.getElementById('progress-progress-bar').classList.add('bg-red-300');
+  clearInterval(progressBar);
 });
+
+window.CloseAll = function CloseAll() {
+  application.closeAll();
+};

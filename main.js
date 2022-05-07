@@ -2,6 +2,12 @@ const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
 const path = require('path');
 const Windows = require('./src/class/__instance_windows');
 const WindowTouchBar = require('./src/class/__instance_touchbar');
+const log = require('electron-log');
+const packageJson = require('./package.json');
+const { version, isBeta } = packageJson;
+require('update-electron-app')({
+  logger: log,
+});
 
 handleSquirrelEvent();
 
@@ -126,14 +132,6 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.on('ready', () => {
-    updateApp = require('update-electron-app')({
-      logger: require('electron-log'),
-    });
-
-    updateApp({
-      updateInterval: '1 hour',
-      notifyUser: true,
-    });
     createWindow();
     app.on('activate', function () {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -157,15 +155,17 @@ app.on('window-all-closed', function () {
 });
 
 // IpcMain Events
+ipcMain.on('is-packaged', (event) => {
+  event.returnValue = app.isPackaged;
+});
 ipcMain.on('get-version', (event) => {
-  event.returnValue = app.getVersion();
+  event.returnValue = version;
+});
+ipcMain.on('get-release-type', (event) => {
+  event.returnValue = isBeta ? 'BETA' : '';
 });
 ipcMain.on('get-lang', (event) => {
   event.returnValue = app.getLocale();
-});
-ipcMain.on('open-windows-auth', () => {
-  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
-  authWindow.setTouchBar(new WindowTouchBar().auth());
 });
 ipcMain.on('open-window-main', () => {
   mainWindow.loadFile(path.join(__dirname, '/routes/main.html'));
@@ -176,10 +176,16 @@ ipcMain.on('open-window-main', () => {
     authWindow = false;
   });
 });
-// ipcMain.on('open-window-auth', () => {
-//   mainWindow.close();
-//   createWindow();
-// });
+ipcMain.on('open-window-auth', () => {
+  mainWindow.close();
+  createWindow();
+});
+ipcMain.on('instance-window-auth', () => {
+  if (!splashWindow.isDestroyed()) {
+    authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+    authWindow.setTouchBar(new WindowTouchBar().auth());
+  }
+});
 ipcMain.on('restart-app', () => {
   app.relaunch();
   app.exit();
@@ -189,45 +195,29 @@ ipcMain.on('close-app', () => {
 });
 
 // AutoUpdater
-ipcMain.on('update-init', (event) => {
-  autoUpdater
-    .checkForUpdatesAndNotify()
-    .then(() => (event.returnValue = true))
-    .catch((error) => (event.returnValue = error));
+autoUpdater.on('update-not-available', (info) => {
+  if (!splashWindow.isDestroyed()) {
+    authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+    authWindow.setTouchBar(new WindowTouchBar().auth());
+  }
 });
 
-autoUpdater.on('checking-for-update', () => {
-  splashWindow.webContents.send('update-checking', true);
+autoUpdater.on('error', (error) => {
+  if (!splashWindow.isDestroyed()) {
+    splashWindow.webContents.send('autoUpdateError', {
+      message: 'Ocorreu um erro ao atualizar!',
+    });
+  }
 });
 
 autoUpdater.on('update-available', (info) => {
-  splashWindow.webContents.send('update-available', {
-    state: true,
-    data: info,
-  });
-});
-
-autoUpdater.on('update-not-available', (info) => {
-  splashWindow.webContents.send('update-not-available', {
-    state: false,
-    data: info,
-  });
-});
-
-autoUpdater.on('download-progress', (progressObj) => {
-  splashWindow.webContents.send('update-download-progress', {
-    state: false,
-    progress: progressObj,
-  });
+  if (!splashWindow.isDestroyed()) {
+    splashWindow.webContents.send('autoUpdateAvailable', {
+      state: true,
+    });
+  }
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  splashWindow.webContents.send('update-downloaded', {
-    state: true,
-    info: info,
-  });
-});
-
-ipcMain.on('update-install', (event) => {
   autoUpdater.quitAndInstall();
 });

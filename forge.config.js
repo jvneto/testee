@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const packageJson = require('./package.json');
 
-const { version } = packageJson;
+const { version, isBeta } = packageJson;
 const iconDir = path.resolve(__dirname, 'assets', 'icons');
 
 if (process.env['WINDOWS_CODESIGN_FILE']) {
@@ -61,7 +61,7 @@ const config = {
           'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
         loadingGif: '',
         noMsi: true,
-        setupExe: `sbotics-${version}-win32-${arch}-setup.exe`,
+        setupExe: `sbotics-${version}${isBeta ? '-BETA' : ''}-win32-${arch}-setup.exe`,
         setupIcon: path.resolve(iconDir, 'sbotics.ico'),
         certificateFile: process.env['WINDOWS_CODESIGN_FILE'],
         certificatePassword: process.env['WINDOWS_CODESIGN_PASSWORD'],
@@ -96,7 +96,7 @@ const config = {
           name: 'testee',
         },
         draft: true,
-        prerelease: false,
+        prerelease: isBeta,
       },
     },
   ],

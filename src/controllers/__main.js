@@ -41,8 +41,7 @@ window.onload = () => {
       !userFile['logged'] ||
       userFile['macAddress'] != macAddress
     ) {
-      //   application.openAuthWindows();
-      console.log('PRECISO VOLTAR AQUI!');
+      application.openAuthWindows();
     }
 
     startPipeLine({
@@ -70,8 +69,7 @@ window.onload = () => {
         try {
           if (error.response) {
             if (error.response.status == 401) {
-              //   application.openAuthWindows();
-              console.log('PRECISO VOLTAR AQUI!');
+              application.openAuthWindows();
             } else {
               new Exception().create({
                 status: error.response.status,

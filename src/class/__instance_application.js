@@ -1,16 +1,10 @@
 let ipcRenderer = require('electron').ipcRenderer;
 const os = require('os');
-import { StringToBoolean } from '../utils/conver-data.js';
 
 class Application {
   constructor() {}
   SLMP() {
-    const slmp = StringToBoolean(process.env.SLMP);
-    try {
-      return slmp != undefined ? slmp : false;
-    } catch (error) {
-      return false;
-    }
+    return !ipcRenderer.sendSync('is-packaged');
   }
   getLocale() {
     const locale = ipcRenderer.sendSync('get-lang').replace('-', '_');
@@ -82,6 +76,9 @@ class Application {
   }
   closeAll() {
     return ipcRenderer.send('close-app');
+  }
+  instanceWindowAuth() {
+    return ipcRenderer.send('instance-window-auth');
   }
 }
 export { Application };
