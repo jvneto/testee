@@ -89,6 +89,18 @@ const config = {
       platforms: ['linux'],
       config: commonLinuxConfig,
     },
+    {
+      name: '@electron-forge/maker-appx',
+      platforms: ['win32'],
+      config: {
+        publisher: 'CN=developmentca',
+        publisherDisplayName: 'Julio Cesar Vera Neto',
+        packageVersion: `1.${version}`,
+        packageName: 'sBotics',
+        packageDisplayName: 'sBotics',
+        packageDescription: 'sBotics Launcher for Desktops',
+      },
+    },
   ],
   publishers: [
     {
