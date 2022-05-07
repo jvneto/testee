@@ -1,8 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Windows = require('./src/class/__instance_windows');
 const WindowTouchBar = require('./src/class/__instance_touchbar');
-const { autoUpdater } = require('electron-updater');
 
 handleSquirrelEvent();
 
@@ -66,14 +66,11 @@ var windowsAllClose = false;
 var mainWindowIsOpen = false;
 
 const createWindow = (accessToken = null) => {
-  const { screen } = require('electron');
-  const windows = new Windows(screen);
-  const touchbar = new WindowTouchBar();
-
+  let { screen } = require('electron');
+  let windows = new Windows(screen);
+  let touchbar = new WindowTouchBar();
   // Auth Window Instance
   authWindow = windows.auth();
-  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
-  authWindow.setTouchBar(touchbar.auth());
 
   // Splash Window Instance
   splashWindow = windows.splash();
@@ -118,10 +115,14 @@ if (!app.requestSingleInstanceLock()) {
     if (authWindow) {
       if (authWindow.isMinimized()) authWindow.restore();
       authWindow.focus();
-      authWindow.webContents.send(
-        'set_user_auth',
-        commandLine[3].split('accessToken=')[1],
-      );
+      commandLine.forEach((command) => {
+        if (command.indexOf('sbotics://') != -1) {
+          authWindow.webContents.send(
+            'set_user_auth',
+            command.split('accessToken=')[1],
+          );
+        }
+      });
     }
   });
 
@@ -141,12 +142,11 @@ if (!app.requestSingleInstanceLock()) {
     authWindow.focus();
     authWindow.webContents.send('set_user_auth', url.split('accessToken=')[1]);
   });
+  app.on('window-all-closed', function () {
+    windowsAllClose = true;
+    if (process.platform !== 'darwin') app.quit();
+  });
 }
-app.on('window-all-closed', function () {
-  console.log('O eventos de fechar todas as telas foram acionados');
-  windowsAllClose = true;
-  if (process.platform !== 'darwin') app.quit();
-});
 
 // IpcMain Events
 ipcMain.on('get-version', (event) => {
@@ -154,6 +154,10 @@ ipcMain.on('get-version', (event) => {
 });
 ipcMain.on('get-lang', (event) => {
   event.returnValue = app.getLocale();
+});
+ipcMain.on('open-windows-auth', () => {
+  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+  authWindow.setTouchBar(new WindowTouchBar().auth());
 });
 ipcMain.on('open-window-main', () => {
   mainWindow.loadFile(path.join(__dirname, '/routes/main.html'));
@@ -164,10 +168,10 @@ ipcMain.on('open-window-main', () => {
     authWindow = false;
   });
 });
-ipcMain.on('open-window-auth', () => {
-  mainWindow.close();
-  createWindow();
-});
+// ipcMain.on('open-window-auth', () => {
+//   mainWindow.close();
+//   createWindow();
+// });
 ipcMain.on('restart-app', () => {
   app.relaunch();
   app.exit();
@@ -185,33 +189,32 @@ ipcMain.on('update-init', (event) => {
 });
 
 autoUpdater.on('checking-for-update', () => {
-console.log(" DEU CERTO")
-  splashWindow.content().send('update-checking', true);
+  splashWindow.webContents.send('update-checking', true);
 });
 
 autoUpdater.on('update-available', (info) => {
-  splashWindow.content().send('update-available', {
+  splashWindow.webContents.send('update-available', {
     state: true,
     data: info,
   });
 });
 
 autoUpdater.on('update-not-available', (info) => {
-  splashWindow.content().send('update-not-available', {
+  splashWindow.webContents.send('update-not-available', {
     state: false,
     data: info,
   });
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
-  splashWindow.content().send('update-download-progress', {
+  splashWindow.webContents.send('update-download-progress', {
     state: false,
     progress: progressObj,
   });
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  splashWindow.content().send('update-downloaded', {
+  splashWindow.webContents.send('update-downloaded', {
     state: true,
     info: info,
   });

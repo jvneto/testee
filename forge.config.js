@@ -44,9 +44,9 @@ const config = {
       config: {
         name: 'sBotics',
         authors: 'sBotics',
-        iconUrl: path.resolve(iconDir, 'icon.ico'),
+        iconUrl: path.resolve(iconDir, 'icon.png'),
         noMsi: true,
-        setupExe: 'sbotics.exe',
+        setupExe: 'sBotics.exe',
         setupIcon: path.resolve(iconDir, 'icon.ico'),
       },
     },
@@ -75,8 +75,8 @@ const config = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'jvneto',
-          name: 'testee',
+          owner: 'sbotics',
+          name: 'launcher',
         },
         draft: true,
         prerelease: false,

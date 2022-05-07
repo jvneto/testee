@@ -1,8 +1,8 @@
 {
     "name": "sbotics",
-    "version": "4.0.1",
+    "version": "3.0.1",
     "description": "sBotics",
-    "main": "index.js",
+    "main": "main.js",
     "author": "Julio Cesar <60150667+jvneto@users.noreply.github.com>",
     "license": "GPL-3.0",
     "scripts": {
@@ -21,7 +21,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/jvneto/testee.git"
+        "url": "https://github.com/sBotics/launcher.git"
     },
     "dependencies": {
         "@sweetalert2/theme-dark": "^5.0.4",

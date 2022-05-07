@@ -1,4 +1,4 @@
-const { BrowserWindow } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
 class Windows {
@@ -8,6 +8,7 @@ class Windows {
     this.height = height;
   }
   splash() {
+    console.log(__dirname);
     return new BrowserWindow({
       width: 470,
       height: 265,
@@ -17,9 +18,10 @@ class Windows {
       frame: false,
       show: false,
       alwaysOnTop: true,
-      title: 'sBotics Launcher',
-      icon: path.join(__dirname, '/assets/icons/app/icon.ico'),
+      title: 'sBotics',
+      icon: path.join(__dirname, '../../assets/icons/icon.png'),
       webPreferences: {
+        // devTools: !app.isPackaged,
         nodeIntegration: true,
         contextIsolation: false,
         enableRemoteModule: true,
@@ -31,11 +33,14 @@ class Windows {
     return new BrowserWindow({
       width: Math.round((16 * height) / 9),
       height: height,
+      minHeight: 600,
+      minWidth: 600,
       show: false,
       autoHideMenuBar: true,
-      title: 'sBotics Launcher',
-      icon: path.join(__dirname, '/assets/icons/app/icon.ico'),
+      title: 'sBotics',
+      icon: path.join(__dirname, '../../assets/icons/icon.png'),
       webPreferences: {
+        // devTools: !app.isPackaged,
         nodeIntegration: true,
         contextIsolation: false,
         enableRemoteModule: true,
@@ -47,11 +52,14 @@ class Windows {
     return new BrowserWindow({
       width: Math.round((16 * height) / 9),
       height: height,
+      minHeight: 600,
+      minWidth: 600,
       show: false,
       autoHideMenuBar: true,
-      title: 'sBotics Launcher',
-      icon: path.join(__dirname, '/assets/icons/app/icon.ico'),
+      title: 'sBotics',
+      icon: path.join(__dirname, '../../assets/icons/icon.png'),
       webPreferences: {
+        devTools: !app.isPackaged,
         nodeIntegration: true,
         contextIsolation: false,
         enableRemoteModule: true,

@@ -68,11 +68,11 @@ class Application {
     var os = process.platform.toLowerCase();
     return platforms[os];
   }
-  openMainWindow() {
-    return ipcRenderer.send('open-window-main');
-  }
   openAuthWindows() {
     return ipcRenderer.send('open-window-auth');
+  }
+  openMainWindow() {
+    return ipcRenderer.send('open-window-main');
   }
   openInstallFolder() {
     shell.openPath(this.getFolderPathSboticsSimulation());
