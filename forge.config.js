@@ -53,6 +53,7 @@ const config = {
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
+      arch: ['x86', 'x86_64'],
       config: (arch) => ({
         name: 'sBotics',
         authors: 'sBotics',
@@ -61,7 +62,9 @@ const config = {
           'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
         loadingGif: '',
         noMsi: true,
-        setupExe: `sbotics-${version}${isBeta ? '-BETA' : ''}-win32-${arch}-setup.exe`,
+        setupExe: `sbotics-${version}${
+          isBeta ? '-BETA' : ''
+        }-win32-${arch}-setup.exe`,
         setupIcon: path.resolve(iconDir, 'sbotics.ico'),
         certificateFile: process.env['WINDOWS_CODESIGN_FILE'],
         certificatePassword: process.env['WINDOWS_CODESIGN_PASSWORD'],
