@@ -51,9 +51,20 @@ const config = {
   },
   makers: [
     {
+      name: '@electron-forge/maker-appx',
+      platforms: ['win32'],
+      config: {
+        publisher: 'CN=developmentca',
+        publisherDisplayName: 'Julio Cesar Vera Neto',
+        packageVersion: `1.${version}`,
+        packageName: 'sBotics',
+        packageDisplayName: 'sBotics',
+        packageDescription: 'sBotics Launcher for Desktops',
+      },
+    },
+    {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
-      arch: ['x86', 'x86_64'],
       config: (arch) => ({
         name: 'sBotics',
         authors: 'sBotics',
@@ -66,17 +77,18 @@ const config = {
           isBeta ? '-BETA' : ''
         }-win32-${arch}-setup.exe`,
         setupIcon: path.resolve(iconDir, 'sbotics.ico'),
-        certificateFile: process.env['WINDOWS_CODESIGN_FILE'],
-        certificatePassword: process.env['WINDOWS_CODESIGN_PASSWORD'],
+        certificateFile:
+          'C:/Users/Julio/Documents/testee/out/make/appx/arm64/default.pfxs',
+        certificatePassword: '',
       }),
     },
     {
-      name: '@electron-forge/maker-pkg',
+      name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
       arch: 'all',
       config: {
         icon: path.resolve(iconDir, 'icon.icns'),
-        install: '/Applications',
+        overwrite: true,
       },
     },
     {
@@ -88,18 +100,6 @@ const config = {
       name: '@electron-forge/maker-rpm',
       platforms: ['linux'],
       config: commonLinuxConfig,
-    },
-    {
-      name: '@electron-forge/maker-appx',
-      platforms: ['win32'],
-      config: {
-        publisher: 'CN=developmentca',
-        publisherDisplayName: 'Julio Cesar Vera Neto',
-        packageVersion: `1.${version}`,
-        packageName: 'sBotics',
-        packageDisplayName: 'sBotics',
-        packageDescription: 'sBotics Launcher for Desktops',
-      },
     },
   ],
   publishers: [

@@ -1,6 +1,6 @@
 {
     "name": "sbotics",
-    "version": "5.0.3",
+    "version": "6.1.0",
     "isBeta": false,
     "description": "sBotics",
     "main": "main.js",
@@ -12,8 +12,10 @@
         "dev-css": "tailwindcss -i src/css/resource/style.css -o src/css/public/style.css",
         "watch-css": "tailwindcss -i src/css/resource/style.css -o src/css/public/style.css --watch",
         "package": "electron-forge package",
-        "make": "electron-forge make",
-        "deploy": "electron-forge publish"
+        "make-win": "electron-forge make --arch=x64",
+        "make-linux": "electron-forge make --arch=all",
+        "make-apple": "electron-forge make --arch=all",
+        "deploy": "electron-forge publish --arch=x64"
     },
     "homepage": "https://sbotics.net",
     "projectUrl": "https://sbotics.net",
@@ -26,6 +28,7 @@
     },
     "dependencies": {
         "@electron-forge/maker-appx": "^6.0.0-beta.63",
+        "@electron-forge/maker-dmg": "^6.0.0-beta.63",
         "@sweetalert2/theme-dark": "^5.0.4",
         "axios": "^0.21.4",
         "cryptr": "^6.0.2",

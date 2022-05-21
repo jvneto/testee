@@ -129,7 +129,7 @@ function OpenSbotics() {
     const lang =
       languageAvarible.indexOf(configData['languageSimulator']) > -1
         ? 'pt_BR'
-        : 'en';
+        : 'en_US';
     var parameters = ['--lang', lang, '--auth_token', userData['accessToken']];
     child(executablePath, parameters, { detached: true });
     application.closeAll();
