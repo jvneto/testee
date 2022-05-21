@@ -50,18 +50,18 @@ const config = {
     },
   },
   makers: [
-    {
-      name: '@electron-forge/maker-appx',
-      platforms: ['win32'],
-      config: {
-        publisher: 'CN=developmentca',
-        publisherDisplayName: 'Julio Cesar Vera Neto',
-        packageVersion: `1.${version}`,
-        packageName: 'sBotics',
-        packageDisplayName: 'sBotics',
-        packageDescription: 'sBotics Launcher for Desktops',
-      },
-    },
+    // {
+    //   name: '@electron-forge/maker-appx',
+    //   platforms: ['win32'],
+    //   config: {
+    //     publisher: 'CN=developmentca',
+    //     publisherDisplayName: 'Julio Cesar Vera Neto',
+    //     packageVersion: `1.${version}`,
+    //     packageName: 'sBotics',
+    //     packageDisplayName: 'sBotics',
+    //     packageDescription: 'sBotics Launcher for Desktops',
+    //   },
+    // },
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
@@ -77,9 +77,8 @@ const config = {
           isBeta ? '-BETA' : ''
         }-win32-${arch}-setup.exe`,
         setupIcon: path.resolve(iconDir, 'sbotics.ico'),
-        certificateFile:
-          'C:/Users/Julio/Documents/testee/out/make/appx/arm64/default.pfxs',
-        certificatePassword: '',
+        certificateFile: process.env['WINDOWS_CODESIGN_FILE'],
+        certificatePassword: process.env['WINDOWS_CODESIGN_PASSWORD'],
       }),
     },
     {
