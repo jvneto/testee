@@ -4,6 +4,7 @@ const packageJson = require('./package.json');
 
 const { version, isBeta } = packageJson;
 const iconDir = path.resolve(__dirname, 'assets', 'icons');
+const backgroundDir = path.resolve(__dirname, 'Banners');
 
 if (process.env['WINDOWS_CODESIGN_FILE']) {
   const certPath = path.join(__dirname, 'win-certificate.pfx');
@@ -44,8 +45,8 @@ const config = {
       identity: 'Developer ID Application: Julio Cesar Vera Neto (5UQ7TRCVCT)',
       hardenedRuntime: true,
       'gatekeeper-assess': false,
-      entitlements: 'static/entitlements.plist',
-      'entitlements-inherit': 'static/entitlements.plist',
+      entitlements: 'entitlements.plist',
+      'entitlements-inherit': 'entitlements.plist',
       'signature-flags': 'library',
     },
   },
@@ -86,6 +87,7 @@ const config = {
       platforms: ['darwin'],
       arch: 'all',
       config: {
+        background: path.resolve(backgroundDir, 'dmg_installer.tif'),
         icon: path.resolve(iconDir, 'icon.icns'),
         overwrite: true,
       },
