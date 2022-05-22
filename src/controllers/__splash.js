@@ -15,8 +15,8 @@ window.onload = () => {
     'get-version',
   )} ${ipcRenderer.sendSync('get-release-type')}`;
 
-  if (!application.SLMP()) {
-    // application.instanceWindowAuth();
+  if (application.SLMP()) {
+    application.instanceWindowAuth();
   } else {
     document.getElementById(
       'text-update-state',

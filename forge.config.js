@@ -72,8 +72,8 @@ const config = {
     {
       name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
-      config: {
-        name: 'sBotics',
+      config: (arch) => ({
+        name: `sBotics-${version}-${arch}`,
         icon: path.resolve(iconDir, 'sbotics.icns'),
         additionalDMGOptions: {
           'code-sign': {
@@ -83,7 +83,7 @@ const config = {
               'Developer ID Application: Julio Cesar Vera Neto (5UQ7TRCVCT)',
           },
         },
-      },
+      }),
     },
     {
       name: '@electron-forge/maker-deb',
