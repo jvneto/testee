@@ -25,7 +25,7 @@ const commonLinuxConfig = {
 const config = {
   packagerConfig: {
     name: 'sBotics',
-    executableName: 'sBotics',
+    executableName: 'sbotics',
     asar: true,
     icon: path.resolve(__dirname, 'assets', 'icons', 'sbotics'),
     appBundleId: 'com.sbotics.launcher',
@@ -73,6 +73,7 @@ const config = {
       name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
       config: {
+        name: 'sBotics',
         icon: path.resolve(iconDir, 'sbotics.icns'),
         additionalDMGOptions: {
           'code-sign': {
