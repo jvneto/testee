@@ -207,8 +207,6 @@ autoUpdater.on('update-not-available', (info) => {
             state: true,
         });
     }
-
-
   // if (!splashWindow.isDestroyed()) {
   //  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
   //  authWindow.setTouchBar(new WindowTouchBar().auth());
