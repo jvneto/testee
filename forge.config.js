@@ -25,7 +25,7 @@ const commonLinuxConfig = {
 const config = {
   packagerConfig: {
     name: 'sBotics',
-    executableName: 'sbotics',
+    executableName: 'sBotics',
     asar: true,
     icon: path.resolve(__dirname, 'assets', 'icons', 'sbotics'),
     appBundleId: 'com.sbotics.launcher',
@@ -88,6 +88,9 @@ const config = {
       name: '@electron-forge/maker-deb',
       platforms: ['linux'],
       config: commonLinuxConfig,
+    },{
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin']
     },
     {
       name: '@electron-forge/maker-rpm',

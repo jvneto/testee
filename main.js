@@ -211,7 +211,7 @@ autoUpdater.on('update-not-available', (info) => {
 autoUpdater.on('error', (error) => {
   if (!splashWindow.isDestroyed()) {
     splashWindow.webContents.send('autoUpdateError', {
-      message: 'Ocorreu um erro ao atualizar!',
+      message: error,
     });
   }
 });
