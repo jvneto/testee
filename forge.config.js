@@ -4,7 +4,7 @@ const packageJson = require('./package.json');
 
 const { version, isBeta } = packageJson;
 const iconDir = path.resolve(__dirname, 'assets', 'icons');
-const backgroundDir = path.resolve(__dirname, 'Banners');
+const backgroundDir = path.resolve(__dirname, 'assets', 'Banners');
 
 if (process.env['WINDOWS_CODESIGN_FILE']) {
   const certPath = path.join(__dirname, 'win-certificate.pfx');
@@ -51,18 +51,6 @@ const config = {
     },
   },
   makers: [
-    // {
-    //   name: '@electron-forge/maker-appx',
-    //   platforms: ['win32'],
-    //   config: {
-    //     publisher: 'CN=developmentca',
-    //     publisherDisplayName: 'Julio Cesar Vera Neto',
-    //     packageVersion: `1.${version}`,
-    //     packageName: 'sBotics',
-    //     packageDisplayName: 'sBotics',
-    //     packageDescription: 'sBotics Launcher for Desktops',
-    //   },
-    // },
     {
       name: '@electron-forge/maker-squirrel',
       platforms: ['win32'],
@@ -70,8 +58,7 @@ const config = {
         name: 'sBotics',
         authors: 'sBotics',
         exe: 'sbotics.exe',
-        iconUrl:
-          'https://raw.githubusercontent.com/electron/fiddle/0119f0ce697f5ff7dec4fe51f17620c78cfd488b/assets/icons/fiddle.ico',
+        iconUrl: path.resolve(iconDir, 'sbotics.ico'),
         loadingGif: '',
         noMsi: true,
         setupExe: `sbotics-${version}${
@@ -85,11 +72,16 @@ const config = {
     {
       name: '@electron-forge/maker-dmg',
       platforms: ['darwin'],
-      arch: 'all',
       config: {
-        background: path.resolve(backgroundDir, 'dmg_installer.tif'),
-        icon: path.resolve(iconDir, 'icon.icns'),
-        overwrite: true,
+        icon: path.resolve(iconDir, 'sbotics.icns'),
+        additionalDMGOptions: {
+          'code-sign': {
+            identity:
+              'Developer ID Application: Julio Cesar Vera Neto (5UQ7TRCVCT)',
+            'signing-identity':
+              'Developer ID Application: Julio Cesar Vera Neto (5UQ7TRCVCT)',
+          },
+        },
       },
     },
     {
@@ -123,10 +115,10 @@ function notarizeMaybe() {
     return;
   }
 
-  if (!process.env.CI) {
-    console.log(`Not in CI, skipping notarization`);
-    return;
-  }
+  //   if (!process.env.CI) {
+  //     console.log(`Not in CI, skipping notarization`);
+  //     return;
+  //   }
 
   if (!process.env.APPLE_ID || !process.env.APPLE_ID_PASSWORD) {
     console.warn(
@@ -134,6 +126,8 @@ function notarizeMaybe() {
     );
     return;
   }
+
+  console.log(`Notarization OK`);
 
   config.packagerConfig.osxNotarize = {
     appBundleId: 'com.sbotics.launcher',
