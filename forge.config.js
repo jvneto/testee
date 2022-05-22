@@ -89,9 +89,10 @@ const config = {
       name: '@electron-forge/maker-deb',
       platforms: ['linux'],
       config: commonLinuxConfig,
-    },{
+    },
+    {
       name: '@electron-forge/maker-zip',
-      platforms: ['win32','linux','darwin']
+      platforms: ['win32', 'linux', 'darwin'],
     },
     {
       name: '@electron-forge/maker-rpm',
