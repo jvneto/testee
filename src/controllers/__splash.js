@@ -31,6 +31,7 @@ window.onload = () => {
               `v${ipcRenderer.sendSync('get-version')}` &&
             hasError == false
           ) {
+            document.getElementById('button-close').classList.remove('hidden');
             if (application.getOS() == 'linux') {
               document.getElementById(
                 'text-update-state',
@@ -39,7 +40,7 @@ window.onload = () => {
               if (!updateAvarible) {
                 document.getElementById(
                   'text-update-state',
-                ).innerHTML = `O sBotics Launcher esta desatualizado! <br/><span class="text-xs text-gray-700">Aguarde até que atualização seja propagada em sua região, isso pode demorar um pouco! Recomendado reiniciar o sBotics Launcher...</span>`;
+                ).innerHTML = `O sBotics Launcher esta desatualizado! <br/><span class="text-xs text-red-700">Aguarde até que atualização seja propagada em sua região, isso pode demorar um pouco! Recomendado reiniciar o sBotics Launcher...</span>`;
               }
             }
           } else {
