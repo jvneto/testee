@@ -91,7 +91,7 @@ const config = {
       config: commonLinuxConfig,
     },{
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin']
+      platforms: ['win32','linux','darwin']
     },
     {
       name: '@electron-forge/maker-rpm',

@@ -78,10 +78,10 @@ const createWindow = (accessToken = null) => {
   // Auth Window Instance
   authWindow = windows.auth();
 
-  if (process.platform.toLowerCase() == 'linux') {
-    authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
-    authWindow.setTouchBar(new WindowTouchBar().auth());
-  }
+  // if (process.platform.toLowerCase() == 'linux') {
+  //  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+  //  authWindow.setTouchBar(new WindowTouchBar().auth());
+  // }
 
   // Splash Window Instance
   splashWindow = windows.splash();
@@ -202,10 +202,17 @@ ipcMain.on('close-app', () => {
 
 // AutoUpdater
 autoUpdater.on('update-not-available', (info) => {
-  if (!splashWindow.isDestroyed()) {
-    authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
-    authWindow.setTouchBar(new WindowTouchBar().auth());
-  }
+    if (!splashWindow.isDestroyed()) {
+        splashWindow.webContents.send('autoUpdateNotAvailable', {
+            state: true,
+        });
+    }
+
+
+  // if (!splashWindow.isDestroyed()) {
+  //  authWindow.loadFile(path.join(__dirname, '/routes/auth.html'));
+  //  authWindow.setTouchBar(new WindowTouchBar().auth());
+  // }
 });
 
 autoUpdater.on('error', (error) => {
